@@ -5,36 +5,31 @@ from recipes.models import Ingredient, Recipe
 class IngredientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Ingredient
-        fields = [
-            'url',
-            'amount',
-            'item',
-            'recipe'
-        ]
+        fields = ["url", "amount", "item", "recipe"]
+
 
 class EmbeddedIngredientSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Ingredient
         fields = [
-            'url',
-            'amount',
-            'item',
+            "url",
+            "amount",
+            "item",
         ]
 
+
 class RecipeSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.StringRelatedField()
+    user = serializers.StringRelatedField(read_only=True)
     ingredients = EmbeddedIngredientSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
         fields = [
-            'url',
+            "url",
             "title",
             "cook_time_in_minutes",
             "prep_time_in_minutes",
+            "public",
             "user",
             "ingredients",
-            "public",
         ]
-
-
