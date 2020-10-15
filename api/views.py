@@ -1,10 +1,10 @@
 from django.core.exceptions import PermissionDenied
 from rest_framework.generics import (
     CreateAPIView,
-    ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-
+from rest_framework.viewsets import ModelViewSet
+from rest_framework import permissions
 from recipes.models import Recipe, Ingredient
 from .serializers import IngredientSerializer, RecipeSerializer
 
@@ -23,29 +23,32 @@ PATCH  /api/ingredients/<pk>/  Update an ingredient
 PATCH  /api/ingredients/<pk>/  Delete an ingredient
 """
 
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.is_authenticated:
+            return True
 
-class RecipeListView(ListCreateAPIView):
-    """
-    View all recipes available to the current user, or all public recipes if not logged in.
-    Requires authentication to create a recipe.
-    """
+        return False
 
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if obj.user == request.user:
+            return True
+
+        return False
+
+class RecipeViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
+    permission_classes = [IsOwnerOrReadOnly,]
 
     def get_queryset(self):
         return Recipe.objects.for_user(self.request.user)
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
-
-
-class RecipeDetailView(RetrieveUpdateDestroyAPIView):
-    serializer_class = RecipeSerializer
-
-    def get_queryset(self):
-        if self.request.method == "GET":
-            return Recipe.objects.for_user(self.request.user)
-        return self.request.user.recipes
 
 
 class IngredientCreateView(CreateAPIView):

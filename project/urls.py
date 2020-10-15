@@ -16,9 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.urls import include, path
+from rest_framework import routers
 
 from recipes import views as recipes_views
 from api import views as api_views
+
+api_router = routers.DefaultRouter()
+api_router.register('recipes', api_views.RecipeViewSet, basename="recipe")
 
 urlpatterns = [
     path("", recipes_views.homepage, name="homepage"),
@@ -73,10 +77,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("registration.backends.default.urls")),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/recipes/', api_views.RecipeListView.as_view(), name="recipe-list"),
-    path('api/recipes/<int:pk>/', api_views.RecipeDetailView.as_view(), name="recipe-detail"),
-    path('api/ingredients/', api_views.IngredientCreateView.as_view(), name="ingredient-list"),
-    path('api/ingredients/<int:pk>/', api_views.IngredientDetailView.as_view(), name="ingredient-detail"),
+    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:

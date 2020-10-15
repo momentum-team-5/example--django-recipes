@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_extensions",
     "ordered_model",
-    'rest_framework',
+    "rest_framework",
     # Project-specific
     "users",
     "recipes",
@@ -164,12 +164,12 @@ if env("USE_EMAIL"):
 # REST Framework settings
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
