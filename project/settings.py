@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_extensions",
     "ordered_model",
+    'rest_framework',
     # Project-specific
     "users",
     "recipes",
@@ -159,6 +160,18 @@ if env("USE_EMAIL"):
     EMAIL_HOST_USER = env("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
     EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+
+# REST Framework settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
 
 # Configure Django App for Heroku.
 import django_heroku

@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.postgres.search import SearchVector
+from django.views.generic import DetailView
 
 from .forms import (
     IngredientForm,
@@ -42,6 +43,21 @@ def recipe_list(request):
         template_name = "recipes/recipe_list.html"
 
     return render(request, template_name, {"recipes": recipes})
+
+class RecipeDetail(DetailView):
+    def get_queryset(self):
+        return Recipe.objects.for_user(self.request.user).annotate(
+            num_ingredients=Count("ingredients", distinct=True),
+            times_cooked=Count("meal_plans", distinct=True),
+            first_cooked=Min("meal_plans__date"),
+        )
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['ingredient_form'] = IngredientForm()
+        context['is_user_recipe'] = self.request.user.is_favorite_recipe(self.get_object())
+        return context
 
 
 def recipe_detail(request, pk):
