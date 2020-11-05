@@ -80,7 +80,13 @@ Recipe Book - {{ recipe.title }}
 
 <ol>
   {% for step in recipe.steps.all %}
-    <li>{{ step.text }}</li>
+    <li>
+      {{ step.text }}
+
+      {% if recipe.user == user %}
+      <a class="f6" href="{% url 'edit_recipe_step' step_pk=step.pk %}">Edit</a>
+      {% endif %}
+    </li>
   {% endfor %}
 </ol>
 

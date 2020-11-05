@@ -15,7 +15,7 @@ from .forms import (
     RecipeStepForm,
     IngredientFormset,
 )
-from .models import Recipe, Tag
+from .models import Recipe, RecipeStep, Tag
 
 
 def homepage(request):
@@ -44,6 +44,7 @@ def recipe_list(request):
 
     return render(request, template_name, {"recipes": recipes})
 
+
 class RecipeDetail(DetailView):
     def get_queryset(self):
         return Recipe.objects.for_user(self.request.user).annotate(
@@ -55,8 +56,10 @@ class RecipeDetail(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        context['ingredient_form'] = IngredientForm()
-        context['is_user_recipe'] = self.request.user.is_favorite_recipe(self.get_object())
+        context["ingredient_form"] = IngredientForm()
+        context["is_user_recipe"] = self.request.user.is_favorite_recipe(
+            self.get_object()
+        )
         return context
 
 
@@ -219,12 +222,31 @@ def add_recipe_step(request, recipe_pk):
             recipe_step = form.save(commit=False)
             recipe_step.recipe = recipe
             recipe_step.save()
-            return redirect(to="recipe_detail", recipe_pk=recipe.pk)
+            return redirect(to="recipe_detail", pk=recipe.pk)
     else:
         form = RecipeStepForm()
 
     return render(
         request, "recipes/add_recipe_step.html", {"form": form, "recipe": recipe}
+    )
+
+
+@login_required
+def edit_recipe_step(request, step_pk):
+    step = get_object_or_404(
+        RecipeStep.objects.filter(recipe__user=request.user), pk=step_pk
+    )
+
+    if request.method == "GET":
+        form = RecipeStepForm(instance=step)
+    else:
+        form = RecipeStepForm(instance=step, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(to="recipe_detail", pk=step.recipe.pk)
+
+    return render(
+        request, "recipes/edit_recipe_step.html", {"form": form, "step": step}
     )
 
 
@@ -245,9 +267,6 @@ def show_meal_plan(request, year=None, month=None, day=None):
     """
     Given a year, month, and day, look up the meal plan for the current user for that
     day and display it.
-
-    If a form is submitted to add a recipe, then go ahead and add recipe to the
-    meal plan for that day.
     """
     if year is None:
         date_for_plan = datetime.date.today()

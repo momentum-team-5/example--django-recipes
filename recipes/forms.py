@@ -29,7 +29,10 @@ class RecipeForm(forms.ModelForm):
 IngredientFormset = inlineformset_factory(
     Recipe,
     Ingredient,
-    fields=("amount", "item",),
+    fields=(
+        "amount",
+        "item",
+    ),
     widgets={
         "amount": forms.TextInput(attrs={"class": "pa2 f4 w-100"}),
         "item": forms.TextInput(attrs={"class": "pa2 f4 w-100"}),
@@ -50,6 +53,7 @@ class RecipeStepForm(forms.ModelForm):
     class Meta:
         model = RecipeStep
         fields = ["text"]
+        widgets = {"text": forms.Textarea(attrs={"class": "w-100 pa2 f4"})}
 
 
 class MealPlanForm(forms.Form):

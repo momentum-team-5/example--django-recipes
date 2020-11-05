@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from recipes.views import edit_recipe_step
 from django.contrib import admin
 from django.conf import settings
 from django.urls import include, path
@@ -22,7 +23,7 @@ from recipes import views as recipes_views
 from api import views as api_views
 
 api_router = routers.DefaultRouter()
-api_router.register('recipes', api_views.RecipeViewSet, basename="recipe")
+api_router.register("recipes", api_views.RecipeViewSet, basename="recipe")
 
 urlpatterns = [
     path("", recipes_views.homepage, name="homepage"),
@@ -65,6 +66,11 @@ urlpatterns = [
         recipes_views.add_recipe_step,
         name="add_recipe_step",
     ),
+    path(
+        "steps/<int:step_pk>/edit/",
+        recipes_views.edit_recipe_step,
+        name="edit_recipe_step",
+    ),
     path("recipes/random/", recipes_views.show_random_recipe, name="random_recipe"),
     path("mealplan/", recipes_views.show_meal_plan, name="todays_meal_plan"),
     path(
@@ -76,8 +82,8 @@ urlpatterns = [
     path("tags/<str:tag_name>/", recipes_views.view_tag, name="view_tag"),
     path("admin/", admin.site.urls),
     path("accounts/", include("registration.backends.default.urls")),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/', include('api.urls')),
+    path("api-auth/", include("rest_framework.urls")),
+    path("api/", include("api.urls")),
 ]
 
 if settings.DEBUG:
