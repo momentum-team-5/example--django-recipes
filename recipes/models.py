@@ -132,7 +132,7 @@ class MealPlan(models.Model):
     recipes = models.ManyToManyField(to=Recipe, related_name="meal_plans")
 
     class Meta:
-        unique_together = [
-            "user",
-            "date",
+        # unique_together = ["user", "date"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "date"], name="unique_user_date")
         ]
