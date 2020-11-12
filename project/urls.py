@@ -36,7 +36,7 @@ urlpatterns = [
     ),
     path(
         "recipes/<int:pk>/",
-        recipes_views.RecipeDetail.as_view(),
+        recipes_views.recipe_detail,
         name="recipe_detail",
     ),
     path(

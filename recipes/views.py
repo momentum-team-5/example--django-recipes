@@ -1,13 +1,12 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Min, F, Q
+from django.db.models import Count, Min, F
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.postgres.search import SearchVector
-from django.views.generic import DetailView
 
 from .forms import (
     IngredientForm,
@@ -30,9 +29,9 @@ def recipe_list(request):
     recipes = (
         Recipe.objects.for_user(request.user)
         .annotate(
-            times_favorited=Count("favorited_by", distinct=True),
-            times_cooked=Count("meal_plans", distinct=True),
-            total_time_in_minutes=F("prep_time_in_minutes") + F("cook_time_in_minutes"),
+            times_cooked=Count("meal_plans__id", distinct=True),
+            times_favorited=Count("favorited_by__id", distinct=True),
+            total_time_in_minutes=F("cook_time_in_minutes") + F("prep_time_in_minutes"),
         )
         .order_by(order_field)
     )
@@ -45,29 +44,9 @@ def recipe_list(request):
     return render(request, template_name, {"recipes": recipes})
 
 
-class RecipeDetail(DetailView):
-    def get_queryset(self):
-        return Recipe.objects.for_user(self.request.user).annotate(
-            num_ingredients=Count("ingredients", distinct=True),
-            times_cooked=Count("meal_plans", distinct=True),
-            first_cooked=Min("meal_plans__date"),
-        )
-
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-        context["ingredient_form"] = IngredientForm()
-        context["is_user_recipe"] = self.request.user.is_favorite_recipe(
-            self.get_object()
-        )
-        return context
-
-
 def recipe_detail(request, pk):
     recipes = Recipe.objects.for_user(request.user).annotate(
-        num_ingredients=Count("ingredients", distinct=True),
-        times_cooked=Count("meal_plans", distinct=True),
-        first_cooked=Min("meal_plans__date"),
+        times_cooked=Count("meal_plans"), first_cooked=Min("meal_plans__date")
     )
 
     recipe = get_object_or_404(recipes, pk=pk)
