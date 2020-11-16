@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.postgres.search import SearchVector
+from django.views import View
+from django.utils.decorators import method_decorator
 
 from .forms import (
     IngredientForm,
@@ -156,6 +158,18 @@ def delete_recipe(request, recipe_pk):
         return redirect(to="recipe_list")
 
     return render(request, "recipes/delete_recipe.html", {"recipe": recipe})
+
+
+@method_decorator(login_required, name="dispatch")
+class DeleteRecipeView(View):
+    def get(self, request, recipe_pk):
+        recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+        return render(request, "recipes/delete_recipe.html", {"recipe": recipe})
+
+    def post(self, request, recipe_pk):
+        recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+        recipe.delete()
+        return redirect(to="recipe_list")
 
 
 @login_required
