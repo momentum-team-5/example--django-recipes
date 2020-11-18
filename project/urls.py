@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.urls import include, path
-import api
 from recipes import views as recipes_views
 from api import views as api_views
 
@@ -78,7 +77,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("registration.backends.default.urls")),
     path("api-auth/", include("rest_framework.urls")),
-    path("api/recipes/", api_views.RecipeListView.as_view()),
+    path("api/", include("api.urls")),
 ]
 
 if settings.DEBUG:

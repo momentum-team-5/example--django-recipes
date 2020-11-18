@@ -162,6 +162,13 @@ if env("USE_EMAIL"):
     EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
     EMAIL_USE_TLS = env("EMAIL_USE_TLS")
 
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ]
+}
+
 # Configure Django App for Heroku.
 import django_heroku
 
