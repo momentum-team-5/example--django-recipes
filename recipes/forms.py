@@ -18,6 +18,7 @@ class RecipeForm(forms.ModelForm):
             "prep_time_in_minutes",
             "cook_time_in_minutes",
             "public",
+            "photo",
         ]
         widgets = {
             "title":
