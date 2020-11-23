@@ -17,6 +17,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(read_only=True, slug_field="username")
     tags = serializers.SlugRelatedField(many=True,
+                                        required=False,
                                         slug_field="tag",
                                         queryset=Tag.objects.all())
     ingredients = IngredientSerializer(many=True, read_only=True)

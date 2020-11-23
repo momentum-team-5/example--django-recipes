@@ -24,6 +24,8 @@ djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
 djoser = "*"
+pillow = "*"
+django-imagekit = "*"
 
 [requires]
 python_version = "3.9"

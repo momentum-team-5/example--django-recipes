@@ -24,9 +24,9 @@ def make_fake_recipe(user):
     )
     recipe.save()
     for _ in range(random.randint(2, 8)):
-        ingredient = Ingredient(
-            recipe=recipe, amount=str(random.randint(1, 10)), item=f.word()
-        )
+        ingredient = Ingredient(recipe=recipe,
+                                amount=str(random.randint(1, 10)),
+                                item=f.word())
         ingredient.save()
     for i in range(random.randint(3, 6)):
         step = RecipeStep(recipe=recipe, text=f.paragraph())
@@ -109,9 +109,9 @@ class Ingredient(models.Model):
 
 
 class RecipeStep(OrderedModel):
-    recipe = models.ForeignKey(
-        to=Recipe, on_delete=models.CASCADE, related_name="steps"
-    )
+    recipe = models.ForeignKey(to=Recipe,
+                               on_delete=models.CASCADE,
+                               related_name="steps")
     text = models.TextField()
     order_with_respect_to = "recipe"
 
@@ -120,14 +120,15 @@ class RecipeStep(OrderedModel):
 
 
 class MealPlan(models.Model):
-    user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name="meal_plans"
-    )
+    user = models.ForeignKey(to=User,
+                             on_delete=models.CASCADE,
+                             related_name="meal_plans")
     date = models.DateField(verbose_name="Date for plan")
     recipes = models.ManyToManyField(to=Recipe, related_name="meal_plans")
 
     class Meta:
         # unique_together = ["user", "date"]
         constraints = [
-            models.UniqueConstraint(fields=["user", "date"], name="unique_user_date")
+            models.UniqueConstraint(fields=["user", "date"],
+                                    name="unique_user_date")
         ]

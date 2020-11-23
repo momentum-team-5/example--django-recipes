@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form action="{% url 'delete_recipe' recipe_pk=recipe.pk %}" method="POST">
+<form action="{% url 'delete_recipe' pk=recipe.pk %}" method="POST">
   {% csrf_token %}
   <p>Are you sure you want to delete {{ recipe.title }}?</p>
   <p>
