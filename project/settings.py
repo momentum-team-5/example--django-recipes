@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "ordered_model",
     "rest_framework",
+    'imagekit',
     # Project-specific
     "users",
     "recipes",

@@ -1,9 +1,12 @@
 from django.db import models
 from django.db.models import Q
+from pilkit.processors.resize import ResizeToFill
 from users.models import User
 from ordered_model.models import OrderedModel
 import random
 from faker import Faker
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class Tag(models.Model):
@@ -64,7 +67,18 @@ class Recipe(models.Model):
     favorited_by = models.ManyToManyField(to=User,
                                           related_name="favorite_recipes",
                                           blank=True)
-    photo = models.ImageField(upload_to='media/recipe_images/', null=True)
+    photo = models.ImageField(upload_to='media/recipe_images/',
+                              null=True,
+                              blank=True)
+    photo_medium = ImageSpecField(
+        source='photo',
+        processors=[ResizeToFit(500, 800, upscale=False)],
+        format='JPEG',
+        options={'quality': 75})
+    photo_thumbnail = ImageSpecField(source='photo',
+                                     processors=[ResizeToFill(200, 200)],
+                                     format='JPEG',
+                                     options={'quality': 75})
 
     def get_tag_names(self):
         tag_names = []

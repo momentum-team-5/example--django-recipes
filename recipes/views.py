@@ -97,10 +97,8 @@ def add_recipe(request):
         ingredient_formset = IngredientFormset(data=request.POST)
 
         if form.is_valid() and ingredient_formset.is_valid():
-            recipe = form.save(commit=False)
-            recipe.user = request.user
-            recipe.save()
-            recipe.set_tag_names(form.cleaned_data["tag_names"])
+            recipe = form.save(user=request.user)
+
             ingredients = ingredient_formset.save(commit=False)
             for ingredient in ingredients:
                 ingredient.recipe = recipe
@@ -131,7 +129,7 @@ def edit_recipe(request, pk):
         ingredient_formset = IngredientFormset(instance=recipe,
                                                data=request.POST)
         if form.is_valid() and ingredient_formset.is_valid():
-            recipe = form.save()
+            recipe = form.save(user=request.user)
             recipe.set_tag_names(form.cleaned_data["tag_names"])
             ingredient_formset.save()
             return redirect(to="recipe_detail", pk=recipe.pk)

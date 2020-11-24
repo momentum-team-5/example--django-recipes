@@ -11,6 +11,14 @@ class RecipeForm(forms.ModelForm):
         required=False,
     )
 
+    def save(self, user, commit=True):
+        recipe = super().save(commit=False)
+        recipe.user = user
+        if commit:
+            recipe.save()
+            recipe.set_tag_names(self.cleaned_data["tag_names"])
+        return recipe
+
     class Meta:
         model = Recipe
         fields = [
@@ -33,6 +41,7 @@ class RecipeForm(forms.ModelForm):
 IngredientFormset = inlineformset_factory(
     Recipe,
     Ingredient,
+    extra=5,
     fields=(
         "amount",
         "item",
